@@ -4,7 +4,9 @@
 # Then use the package as p::packagename
 # GLOBAL means that the properties are propagated to include and link of all projects
 # REQUIRED means that it is passed to the find_package
+#
 # TODO special options for find boost
+# TODO more libraries
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake_modules)
 function(usepackage)
 	set(globaluse)
@@ -42,17 +44,20 @@ function(usepackage)
 			elseif(${name} STREQUAL glew)
 				find_package(Glew ${isrequired})
 				if(GLEW_FOUND)
-				add_library(p::glew INTERFACE IMPORTED)
-				set_property(TARGET p::glew PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIR}")
-				set_property(TARGET p::glew PROPERTY INTERFACE_LINK_LIBRARIES ${GLEW_LIBRARIES} p::opengl)
+					add_library(p::glew INTERFACE IMPORTED)
+					set_property(TARGET p::glew PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIR}")
+					set_property(TARGET p::glew PROPERTY INTERFACE_LINK_LIBRARIES ${GLEW_LIBRARIES} p::opengl)
 				endif()
 			elseif(${name} STREQUAL glfw)
 				find_package(GLFW3 ${isrequired})
 				if(GLFW3_FOUND)
 					add_library(p::glfw INTERFACE IMPORTED)
+					
+					# the following are needed when glfw is loaded in static form under OSX, in practice we need to pull some 
+					# OSX system libraries
 					if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-						FIND_LIBRARY(COCOA_LIBRARY Cocoa)
-						FIND_LIBRARY(COREVIDEO_LIBRARY CoreVideo)
+						find_library(COCOA_LIBRARY Cocoa)
+						find_library(COREVIDEO_LIBRARY CoreVideo)
 						find_library(IOKIT_FRAMEWORK IOKit)
 						find_library(QTKIT_FRAMEWORK QtKit)
 						find_library(COREMEDIA_FRAMEWORK CoreMedia)
@@ -73,8 +78,8 @@ function(usepackage)
 			elseif(${name} STREQUAL eigen)
 				find_package(Eigen3 ${isrequired})
 				if(EIGEN3_FOUND)
-				add_library(p::eigen3 INTERFACE IMPORTED)
-				set_property(TARGET p::eigen3 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIR})
+					add_library(p::eigen3 INTERFACE IMPORTED)
+					set_property(TARGET p::eigen3 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIR})
 				endif()
 			elseif(${name} STREQUAL glm)
 				find_package(GLM ${isrequired})
@@ -96,13 +101,16 @@ function(usepackage)
 					set_property(TARGET p::assimp PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${ASSIMP_INCLUDE_DIRS})
 					set_property(TARGET p::assimp PROPERTY INTERFACE_LINK_LIBRARIES ${ASSIMP_LIBRARIES})
 					set_property(TARGET p::assimp PROPERTY INTERFACE_LINK_DIRECTORIES ${ASSIMP_LIBRARY_DIRS})
+					# THE FOLLOWING IS NEEDED due to a limit in FindAssImp
 					link_directories(${ASSIMP_LIBRARY_DIRS})
 				endif()
 			endif()
 
-			#TODO: OpenNI2, lz4, zeromq,aruco
+			#TODO: add more useful such as: OpenNI2,lz4,zeromq,aruco
+			
 			if(${globaluse})
 				link_libraries(p::${name})
+				include_directories(p::${name})
 			endif()
 		endif()
 	endforeach()
