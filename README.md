@@ -13,3 +13,16 @@ The following example uses OpeNGL, GLEW, GLFW, GLM and AssImp. Note that depende
 	add_executable(go1 go1.cpp)
 	target_link_libraries(go1 p::glew p::glfw p::glm p::boost p::assimp)
 ```
+
+# supported libraries
+
+* aruco
+* assimp
+* boost
+* eigen
+* glib2
+* glm
+* gstreamer
+* json
+* opencv
+* opengl
