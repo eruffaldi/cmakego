@@ -1,4 +1,4 @@
-# cmakego - Emanuele Ruffaldi, Scuola Superiore Sant'Anna 2015
+# cmakego - Emanuele Ruffaldi, Scuola Superiore Sant'Anna 2015-2016
 #
 # usepackage([GLOBAL] [REQUIRED] packages...)
 # Then use the package as p::packagename
@@ -7,7 +7,7 @@
 #
 # TODO special options for find boost
 # TODO more libraries
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake_modules)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake_modules)
 function(usepackage)
 	set(globaluse)
 	set(isrequired)
@@ -18,6 +18,13 @@ function(usepackage)
 			set(isrequired REQUIRED)
 		elseif(${name} STREQUAL NOREQUIRED)
 			set(isrequired)
+		endif()
+	endforeach()
+	foreach(name ${ARGV})
+		if(${name} STREQUAL GLOBAL)	
+
+		elseif(${name} STREQUAL REQUIRED)
+		elseif(${name} STREQUAL NOREQUIRED)
 		else()
 			if(${name} STREQUAL opengl)	
 				find_package(OpenGL ${isrequired})
@@ -78,8 +85,10 @@ function(usepackage)
 			elseif(${name} STREQUAL eigen)
 				find_package(Eigen3 ${isrequired})
 				if(EIGEN3_FOUND)
-					add_library(p::eigen3 INTERFACE IMPORTED)
-					set_property(TARGET p::eigen3 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIR})
+					add_library(p::eigen INTERFACE IMPORTED)
+					set_property(TARGET p::eigen PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIR})
+				elseif(${isrequired})
+					error("Cannot find REQUIRED EIGEN")
 				endif()
 			elseif(${name} STREQUAL glm)
 				find_package(GLM ${isrequired})
@@ -104,9 +113,42 @@ function(usepackage)
 					# THE FOLLOWING IS NEEDED due to a limit in FindAssImp
 					link_directories(${ASSIMP_LIBRARY_DIRS})
 				endif()
+			elseif(${name} STREQUAL opencv)
+				find_package(OpenCV ${isrequired})
+				if(OpenCV_FOUND)
+					add_library(p::opencv INTERFACE IMPORTED)
+					set_property(TARGET p::opencv PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${OpenCV_INCLUDE_DIRS})
+					set_property(TARGET p::opencv PROPERTY INTERFACE_LINK_LIBRARIES ${OpenCV_LIBS})
+					#set_property(TARGET p::opencv PROPERTY INTERFACE_LINK_DIRECTORIES ${ASSIMP_LIBRARY_DIRS})
+					# THE FOLLOWING IS NEEDED due to a limit in FindAssImp
+					#link_directories(${ASSIMP_LIBRARY_DIRS})
+				endif()								
+			elseif(${name} STREQUAL aruco)
+				message(XX CHECK ARUCO)
+				find_package(Aruco ${isrequired})
+				if(Aruco_FOUND)
+					add_library(p::aruco INTERFACE IMPORTED)
+					set_property(TARGET p::aruco PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${Aruco_INCLUDE_DIR})
+					set_property(TARGET p::aruco PROPERTY INTERFACE_LINK_LIBRARIES ${Aruco_LIBRARY})
+					#set_property(TARGET p::aruco PROPERTY INTERFACE_LINK_DIRECTORIES ${ASSIMP_LIBRARY_DIRS})
+					# THE FOLLOWING IS NEEDED due to a limit in FindAssImp
+					#link_directories(${ASSIMP_LIBRARY_DIRS})
+				elseif(isrequired)
+					message(FATAL_ERROR Missing ARUCO)
+				endif()		
+			elseif(${name} STREQUAL json)
+				find_package(JsonCpp ${isrequired})
+				if(JsonCpp_FOUND)
+					add_library(p::json INTERFACE IMPORTED)
+					set_property(TARGET p::json PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${JSONCPP_INCLUDE_DIR})
+					set_property(TARGET p::json PROPERTY INTERFACE_LINK_LIBRARIES ${JSONCPP_LIBRARY})
+					#set_property(TARGET p::json PROPERTY INTERFACE_LINK_DIRECTORIES ${ASSIMP_LIBRARY_DIRS})
+					# THE FOLLOWING IS NEEDED due to a limit in FindAssImp
+					#link_directories(${ASSIMP_LIBRARY_DIRS})
+				endif()		
 			endif()
 
-			#TODO: add more useful such as: OpenNI2,lz4,zeromq,aruco
+			#TODO: add more useful such as: OpenNI2,lz4,zeromq,
 			
 			if(${globaluse})
 				link_libraries(p::${name})
