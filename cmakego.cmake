@@ -129,7 +129,7 @@ function(usepackage)
 				if(Aruco_FOUND)
 					add_library(p::aruco INTERFACE IMPORTED)
 					set_property(TARGET p::aruco PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${Aruco_INCLUDE_DIR})
-					set_property(TARGET p::aruco PROPERTY INTERFACE_LINK_LIBRARIES ${Aruco_LIBRARY})
+					set_property(TARGET p::aruco PROPERTY INTERFACE_LINK_LIBRARIES ${Aruco_LIBRARY} p::opencv)
 					#set_property(TARGET p::aruco PROPERTY INTERFACE_LINK_DIRECTORIES ${ASSIMP_LIBRARY_DIRS})
 					# THE FOLLOWING IS NEEDED due to a limit in FindAssImp
 					#link_directories(${ASSIMP_LIBRARY_DIRS})
