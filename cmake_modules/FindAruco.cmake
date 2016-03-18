@@ -36,7 +36,7 @@ if (NOT Aruco_ROOT)
   endif()
 endif()
 
-message("Aruco root ${Aruco_ROOT}")
+#message("Aruco root ${Aruco_ROOT}")
 
 # concat all the search paths
 IF(Aruco_ROOT)
