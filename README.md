@@ -42,7 +42,7 @@ The following example uses OpeNGL, GLEW, GLFW, GLM and AssImp. Note that depende
 
 ## real libraries ##
 
-The supported libraries come from the domain of 3D OpenGL/AR being related to the things we typically
+The supported libraries come from the domain of 3D OpenGL/AR/vision being related to the things we typically work with:
 
 * aruco: opencv
 * assimp
@@ -53,6 +53,7 @@ The supported libraries come from the domain of 3D OpenGL/AR being related to th
 * flann
 * freenect
 * freenect2
+* freetype
 * glib2
 * glm
 * glew: opengl
