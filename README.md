@@ -18,7 +18,7 @@ Then the p::packagename can be used in the target_link_libraries of a target to 
 ``` cpp
 	add_executable(go1 go1.cpp)
 	target_link_libraries(go1 p::glew p::glfw p::glm p::boost p::assimp)
-``` cpp
+```
 
 When REQUIRED is present then the package is enforced otherwise the cmake will terminate.
 
