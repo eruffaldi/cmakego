@@ -50,6 +50,7 @@ The supported libraries come from the domain of 3D OpenGL/AR being related to th
 * cairo
 * eigen
 * ffmpeg
+* flann
 * freenect
 * freenect2
 * glib2
@@ -58,9 +59,12 @@ The supported libraries come from the domain of 3D OpenGL/AR being related to th
 * glfw: opengl, display
 * gstreamer: glib2
 * json
+* leap
 * libusb (1.0)
+* lz4
 * opencv
 * opengl
+* openni2
 * portaudio
 * tinyxml2
 * x264
