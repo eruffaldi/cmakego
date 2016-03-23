@@ -14,15 +14,31 @@ The following example uses OpeNGL, GLEW, GLFW, GLM and AssImp. Note that depende
 	target_link_libraries(go1 p::glew p::glfw p::glm p::boost p::assimp)
 ```
 
-# supported libraries
+# Libraries
 
-* aruco
+## real libraries ##
+
+The supported libraries come from the domain of 3D OpenGL/AR being related to the things we typically
+
+* aruco: opencv
 * assimp
 * boost
 * eigen
+* ffmpeg
 * glib2
 * glm
-* gstreamer
+* glew: opengl
+* glfw: opengl, display
+* gstreamer: glib2
 * json
+* libusb (1.0)
 * opencv
 * opengl
+* x264
+* zeromq
+
+## virtual libraries ##
+
+* display: this is a library for accessing the native system (X11 under Linux, CoCoa under OSX)
+
+#

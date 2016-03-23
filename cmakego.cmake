@@ -6,9 +6,6 @@
 # REQUIRED means that it is passed to the find_package
 #
 # TODO special options for find boost
-# TODO more libraries
-#
-# TODO check required target is existing (nesting usepackage)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake_modules)
 function(usepackage)
 	set(globaluse)
@@ -60,34 +57,58 @@ function(usepackage)
 						set_property(TARGET p::glew PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIR}")
 						set_property(TARGET p::glew PROPERTY INTERFACE_LINK_LIBRARIES ${GLEW_LIBRARIES} p::opengl)
 					endif()		
+				elseif(${name} STREQUAL display)
+					if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+						set(DISPLAY_INCLUDE_DIR)
+						find_library(X11_LIBRARY X11)
+						find_library(XX_LIBRARY Xxf86vm)
+						find_library(XRANDR_LIBRARY Xrandr)
+						find_library(XI_LIBRARY Xi)
+						find_library(XEXT_LIBRARY Xext)
+						set(DISPLAY_LIBRARIES 
+									${X11_LIBRARY}
+									${XX_LIBRARY}
+									${XRANDR_LIBRARY}
+									${XI_LIBRARY}
+									${XEXT_LIBRARY}
+									-lrt -lm -lusb-1.0 
+									)						
+					elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+						set(DISPLAY_INCLUDE_DIR /System/Library/Frameworks)
+						find_library(COCOA_LIBRARY Cocoa)
+						find_library(COREVIDEO_LIBRARY CoreVideo)
+						find_library(IOKIT_FRAMEWORK IOKit)
+						find_library(QTKIT_FRAMEWORK QtKit)
+						find_library(COREMEDIA_FRAMEWORK CoreMedia)
+						find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
+						find_library(AV_FOUNDATION_FRAMEWORK AVFoundation)
+						set(DISPLAY_LIBRARIES
+								${COCOA_LIBRARY}
+								${COREVIDEO_LIBRARY}
+								${IOKIT_FRAMEWORK}
+								${QTKIT_FRAMEWORK}
+								${COREMEDIA_FRAMEWORK}
+								${AV_FOUNDATION_FRAMEWORK}
+								${CORE_FOUNDATION_FRAMEWORK})
+					endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+					add_library(p::display INTERFACE IMPORTED)
+					set_property(TARGET p::display PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${DISPLAY_INCLUDE_DIR}")
+					set_property(TARGET p::display PROPERTY INTERFACE_LINK_LIBRARIES ${DISPLAY_LIBRARIES})					
 				elseif(${name} STREQUAL glfw)
-					usepackage(opengl)
+					usepackage(opengl display)
 					find_package(GLFW3 ${isrequired})
 					if(GLFW3_FOUND)
 						add_library(p::glfw INTERFACE IMPORTED)
-						
-						# the following are needed when glfw is loaded in static form under OSX, in practice we need to pull some 
-						# OSX system libraries
-						if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-							find_library(COCOA_LIBRARY Cocoa)
-							find_library(COREVIDEO_LIBRARY CoreVideo)
-							find_library(IOKIT_FRAMEWORK IOKit)
-							find_library(QTKIT_FRAMEWORK QtKit)
-							find_library(COREMEDIA_FRAMEWORK CoreMedia)
-							find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-							find_library(AV_FOUNDATION_FRAMEWORK AVFoundation)
-							set(OS_GLFW_EXTRA
-									${COCOA_LIBRARY}
-									${COREVIDEO_LIBRARY}
-									${IOKIT_FRAMEWORK}
-									${QTKIT_FRAMEWORK}
-									${COREMEDIA_FRAMEWORK}
-									${AV_FOUNDATION_FRAMEWORK}
-									${CORE_FOUNDATION_FRAMEWORK})
-						endif()
 						set_property(TARGET p::glfw PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${GLFW3_INCLUDE_DIRS}")
-						set_property(TARGET p::glfw PROPERTY INTERFACE_LINK_LIBRARIES ${GLFW3_LIBRARIES} ${OS_GLFW_EXTRA} p::opengl)
+						set_property(TARGET p::glfw PROPERTY INTERFACE_LINK_LIBRARIES ${GLFW3_LIBRARIES} p::opengl p::display)
 					endif()		
+				elseif(${name} STREQUAL ovr)
+					find_package(OVR ${isrequired})
+					if(OVR_FOUND)
+						add_library(p::ovr INTERFACE IMPORTED)
+						set_property(TARGET p::ovr PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${OVR_INCLUDES})
+						set_property(TARGET p::ovr PROPERTY INTERFACE_LINK_LIBRARIES ${OVR_LIBRARIES})
+					endif()
 				elseif(${name} STREQUAL eigen)
 					find_package(Eigen3 ${isrequired})
 					if(EIGEN3_FOUND)
@@ -148,10 +169,62 @@ function(usepackage)
 						# THE FOLLOWING IS NEEDED due to a limit in FindAssImp
 						#link_directories(${ASSIMP_LIBRARY_DIRS})
 					endif()		
+				elseif(${name} STREQUAL ffmpeg)
+					find_package(FFmpeg ${isrequired})
+					if (FFMPEG_FOUND)
+						add_library(p::ffmpeg::avformat INTERFACE IMPORTED)
+						set_property(TARGET p::ffmpeg::avformat PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_LIBAVFORMAT_INCLUDE_DIRS})
+						set_property(TARGET p::ffmpeg::avformat PROPERTY INTERFACE_LINK_LIBRARIES ${FFMPEG_AVFORMAT_LIBRARIES})
+
+						add_library(p::ffmpeg::avfilter INTERFACE IMPORTED)
+						set_property(TARGET p::ffmpeg::avfilter PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_LIBAVFILTER_INCLUDE_DIRS})
+						set_property(TARGET p::ffmpeg::avfilter PROPERTY INTERFACE_LINK_LIBRARIES ${FFMPEG_LIBAVFILTER_LIBRARIES})
+
+						add_library(p::ffmpeg::avdevice INTERFACE IMPORTED)
+						set_property(TARGET p::ffmpeg::avdevice PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_LIBAVDEVICE_INCLUDE_DIRS})
+						set_property(TARGET p::ffmpeg::avdevice PROPERTY INTERFACE_LINK_LIBRARIES ${FFMPEG_LIBAVDEVICE_LIBRARIES})
+
+						add_library(p::ffmpeg::avcodec INTERFACE IMPORTED)
+						set_property(TARGET p::ffmpeg::avcodec PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_LIBAVCODEC_INCLUDE_DIRS})
+						set_property(TARGET p::ffmpeg::avcodec PROPERTY INTERFACE_LINK_LIBRARIES ${FFMPEG_LIBAVCODEC_LIBRARIES})
+
+						add_library(p::ffmpeg::avutil INTERFACE IMPORTED)
+						set_property(TARGET p::ffmpeg::avutil PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_LIBAVUTIL_INCLUDE_DIRS})
+						set_property(TARGET p::ffmpeg::avutil PROPERTY INTERFACE_LINK_LIBRARIES ${FFMPEG_LIBAVUTIL_LIBRARIES})
+
+						add_library(p::ffmpeg::swscale INTERFACE IMPORTED)
+						set_property(TARGET p::ffmpeg::swscale PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_LIBSWSCALE_INCLUDE_DIRS})
+						set_property(TARGET p::ffmpeg::swscale PROPERTY INTERFACE_LINK_LIBRARIES ${FFMPEG_LIBSWSCALE_LIBRARIES})
+
+						add_library(p::ffmpeg INTERFACE IMPORTED)
+						set_property(TARGET p::ffmpeg PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_INCLUDE_DIRS})
+						set_property(TARGET p::ffmpeg PROPERTY INTERFACE_LINK_LIBRARIES ${FFMPEG_LIBRARIES})
+					endif()
+				elseif(${name} STREQUAL x264)
+					find_package(x264 ${isrequired})
+					if (X264_FOUND)
+						add_library(p::x264 INTERFACE IMPORTED)
+						set_property(TARGET p::x264 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${X264_INCLUDE_DIR})
+						set_property(TARGET p::x264 PROPERTY INTERFACE_LINK_LIBRARIES ${X264_LIBRARY})
+					endif()
+				elseif(${name} STREQUAL zeromq)
+					find_package(ZeroMQ ${isrequired})
+					if (ZeroMQ_FOUND)
+						add_library(p::zeromq INTERFACE IMPORTED)
+						set_property(TARGET p::zeromq PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR})
+						set_property(TARGET p::zeromq PROPERTY INTERFACE_LINK_LIBRARIES ${ZeroMQ_LIBRARY})
+					endif()
+				elseif(${name} STREQUAL libusb)
+					find_package(libusb-1.0 ${isrequired})
+					if (LIBUSB_1_FOUND)
+						add_library(p::libusb INTERFACE IMPORTED)
+						set_property(TARGET p::libusb PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${LIBUSB_1_INCLUDE_DIRS})
+						set_property(TARGET p::libusb PROPERTY INTERFACE_LINK_LIBRARIES ${LIBUSB_1_LIBRARIES})
+					endif()
 				else()
 					include(cmakego_{$name} OPTIONAL RESULT_VARIABLE missing)
 					if(NOT ${missing})
-						message(FATAL_ERROR Unknown Target ${xname} provide cmake_{$name})
+						message(FATAL_ERROR Unknown Target ${xname} prvide cmake_{$name})
 					endif()
 					if(NOT TARGET ${xname} AND isrequired)
 						message(FATAL_ERROR Included file cmake_{$name} has not provided {$xname})
