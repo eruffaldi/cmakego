@@ -48,24 +48,30 @@ The supported libraries come from the domain of 3D OpenGL/AR/vision being relate
 * assimp
 * boost
 * cairo
+* display (virtual)
+* egl
 * eigen
-* ffmpeg
+* ffmpeg (and submodules)
 * flann
 * freenect
 * freenect2
 * freetype
-* glib2
-* glm
 * glew: opengl
 * glfw: opengl, display
+* glib2
+* glm
 * gstreamer: glib2
 * json
+* kdl
 * leap
 * libusb (1.0)
 * lz4
+* nlopt
 * opencv
 * opengl
+* opengles2
 * openni2
+* ovr (Oculus)
 * portaudio
 * tinyxml2
 * x264
