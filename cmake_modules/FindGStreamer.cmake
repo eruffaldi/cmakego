@@ -124,10 +124,11 @@ IF (GSTREAMER_gst_INCLUDE_DIR )
   list(REMOVE_DUPLICATES GSTREAMER_INCLUDE_DIR)
   SET(GSTREAMER_LIBRARIES ${GSTREAMER_gstaudio_LIBRARY} ${GSTREAMER_gstbase_LIBRARY}
                           ${GSTREAMER_gstcontroller_LIBRARY} ${GSTREAMER_gstdataprotocol_LIBRARY} ${GSTREAMER_gstinterfaces_LIBRARY}
-                          ${GSTREAMER_gstnet_LIBRARY} ${GSTREAMER_gstnetbuffer_LIBRARY} ${GSTREAMER_gstpbutils_LIBRARY}
+                          ${GSTREAMER_gstapp_LIBRARY} ${GSTREAMER_gstnet_LIBRARY} ${GSTREAMER_gstnetbuffer_LIBRARY} ${GSTREAMER_gstpbutils_LIBRARY}
                           ${GSTREAMER_gstreamer_LIBRARY} ${GSTREAMER_gstriff_LIBRARY} ${GSTREAMER_gstrtp_LIBRARY}
                           ${GSTREAMER_gstrtsp_LIBRARY} ${GSTREAMER_gstsdp_LIBRARY} ${GSTREAMER_gsttag_LIBRARY} ${GSTREAMER_gstvideo_LIBRARY})
   list(REMOVE_DUPLICATES GSTREAMER_LIBRARIES)
+  message(gstreamer ${GSTREAMER_LIBRARIES})
   SET(GSTREAMER_FOUND TRUE)
 else()
 message(gstreamer missing! ${GSTREAMER_LIB_DIR})
