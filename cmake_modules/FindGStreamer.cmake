@@ -21,7 +21,6 @@
 #  gstreamer-fft:        GSTREAMER_FFT_INCLUDE_DIRS and GSTREAMER_FFT_LIBRARIES
 #  gstreamer-pbutils:    GSTREAMER_PBUTILS_INCLUDE_DIRS and GSTREAMER_PBUTILS_LIBRARIES
 #  gstreamer-video:      GSTREAMER_VIDEO_INCLUDE_DIRS and GSTREAMER_VIDEO_LIBRARIES
-#
 # Copyright (C) 2012 Raphael Kubo da Costa <rakuco@webkit.org>
 #
 # Redistribution and use in source and binary forms, with or without
@@ -84,17 +83,27 @@ else ()
 
     macro(FIND_GSTREAMER_COMPONENT _component_prefix _pkgconfig_name _header _library)
         pkg_check_modules(PC_${_component_prefix} QUIET ${_pkgconfig_name})
+#        message(XXM ${_pkgconfig_name})
+#        message(XXF ${PC_${_component_prefix}_FOUND})
+        if(PC_${_component_prefix}_FOUND)        
+            set(${_component_prefix}_INCLUDE_DIRS ${PC_${_component_prefix}_INCLUDE_DIRS})
+#            message(XXI ${PC_${_component_prefix}_INCLUDE_DIRS})
+ #           message(XXC ${PC_${_component_prefix}_CFLAGS})
+            set(${_component_prefix}_LIBRARIES ${PC_${_component_prefix}_LIBRARY_DIRS} ${PC_${_component_prefix}_LIBRARIES})
+        endif()
+        #original
+        #find_path(${_component_prefix}_INCLUDE_DIRS
+        #    NAMES ${_header}
+        #    HINTS ${PC_${_component_prefix}_INCLUDE_DIRS} ${PC_${_component_prefix}_INCLUDEDIR}
+        #    PATH_SUFFIXES gstreamer-1.0
+        #)
 
-        find_path(${_component_prefix}_INCLUDE_DIRS
-            NAMES ${_header}
-            HINTS ${PC_${_component_prefix}_INCLUDE_DIRS} ${PC_${_component_prefix}_INCLUDEDIR}
-            PATH_SUFFIXES gstreamer-1.0
-        )
+        #find_library(${_component_prefix}_LIBRARIES
+        #    NAMES ${_library}
+        #    HINTS ${PC_${_component_prefix}_LIBRARY_DIRS} ${PC_${_component_prefix}_LIBDIR}
+        #)
 
-        find_library(${_component_prefix}_LIBRARIES
-            NAMES ${_library}
-            HINTS ${PC_${_component_prefix}_LIBRARY_DIRS} ${PC_${_component_prefix}_LIBDIR}
-        )
+        # we miss the additional LDFLAGS
     endmacro()
 endif ()
 
@@ -140,6 +149,7 @@ FIND_GSTREAMER_COMPONENT(GSTREAMER_FFT gstreamer-fft-1.0 gst/fft/gstfft.h gstfft
 FIND_GSTREAMER_COMPONENT(GSTREAMER_PBUTILS gstreamer-pbutils-1.0 gst/pbutils/pbutils.h gstpbutils-1.0)
 FIND_GSTREAMER_COMPONENT(GSTREAMER_VIDEO gstreamer-video-1.0 gst/video/video.h gstvideo-1.0)
 
+
 # ------------------------------------------------
 # 3. Process the COMPONENTS passed to FIND_PACKAGE
 # ------------------------------------------------
@@ -172,3 +182,5 @@ mark_as_advanced(
     GSTREAMER_VIDEO_INCLUDE_DIRS
     GSTREAMER_VIDEO_LIBRARIES
 )
+
+#PKG_CONFIG_PATH=/opt/local/lib/pkgconfig pkg-config --cflags --libs gstreamer-app-1.0
