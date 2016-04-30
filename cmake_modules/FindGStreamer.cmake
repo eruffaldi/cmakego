@@ -83,13 +83,20 @@ else ()
 
     macro(FIND_GSTREAMER_COMPONENT _component_prefix _pkgconfig_name _header _library)
         pkg_check_modules(PC_${_component_prefix} QUIET ${_pkgconfig_name})
-#        message(XXM ${_pkgconfig_name})
-#        message(XXF ${PC_${_component_prefix}_FOUND})
         if(PC_${_component_prefix}_FOUND)        
+            # we need to make ALL ${PC_${_component_prefix}_LIBRARIES} absolute
+            set(tl "")
+            foreach (tmp ${PC_${_component_prefix}_LIBRARIES})
+                find_library(tmp_lib_${tmp}
+                    NAMES ${tmp}
+                    HINTS ${PC_${_component_prefix}_LIBRARY_DIRS} ${PC_${_component_prefix}_LIBDIR}
+                )
+                #message(STATUS "Lookup ${tmp} in ${PC_${_component_prefix}_LIBRARY_DIRS} gave ${tmp_lib_${tmp}}")
+                set(tl ${tl} ${tmp_lib_${tmp}})
+            endforeach(tmp)
+            #message(STATUS "Outcome ${tl}")
             set(${_component_prefix}_INCLUDE_DIRS ${PC_${_component_prefix}_INCLUDE_DIRS})
-#            message(XXI ${PC_${_component_prefix}_INCLUDE_DIRS})
- #           message(XXC ${PC_${_component_prefix}_CFLAGS})
-            set(${_component_prefix}_LIBRARIES ${PC_${_component_prefix}_LIBRARY_DIRS} ${PC_${_component_prefix}_LIBRARIES})
+            set(${_component_prefix}_LIBRARIES ${tl})
         endif()
         #original
         #find_path(${_component_prefix}_INCLUDE_DIRS
@@ -98,10 +105,6 @@ else ()
         #    PATH_SUFFIXES gstreamer-1.0
         #)
 
-        #find_library(${_component_prefix}_LIBRARIES
-        #    NAMES ${_library}
-        #    HINTS ${PC_${_component_prefix}_LIBRARY_DIRS} ${PC_${_component_prefix}_LIBDIR}
-        #)
 
         # we miss the additional LDFLAGS
     endmacro()
@@ -118,8 +121,14 @@ FIND_GSTREAMER_COMPONENT(GSTREAMER_BASE gstreamer-base-1.0 gst/gst.h gstbase-1.0
 
 # 1.2. Check GStreamer version
 if (GSTREAMER_INCLUDE_DIRS)
-    if (EXISTS "${GSTREAMER_INCLUDE_DIRS}/gst/gstversion.h")
-        file(READ "${GSTREAMER_INCLUDE_DIRS}/gst/gstversion.h" GSTREAMER_VERSION_CONTENTS)
+    # modified because it can have multiple dirs
+    find_path(GSTREAMER_INCLUDE_DIRS1
+        NAMES gst/gstversion.h
+        HINTS ${GSTREAMER_INCLUDE_DIRS}
+        PATH_SUFFIXES gstreamer-1.0
+    )
+    if (GSTREAMER_INCLUDE_DIRS1)
+        file(READ "${GSTREAMER_INCLUDE_DIRS1}/gst/gstversion.h" GSTREAMER_VERSION_CONTENTS)
 
         string(REGEX MATCH "#define +GST_VERSION_MAJOR +\\(([0-9]+)\\)" _dummy "${GSTREAMER_VERSION_CONTENTS}")
         set(GSTREAMER_VERSION_MAJOR "${CMAKE_MATCH_1}")

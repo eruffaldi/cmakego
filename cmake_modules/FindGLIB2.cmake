@@ -43,6 +43,15 @@ ELSE ()
   IF ( PKG_CONFIG_FOUND )
     IF ( GLIB2_FOUND )
       SET ( GLIB2_CORE_FOUND TRUE )
+      set(tl "")
+      foreach (tmp ${GLIB2_LIBRARIES})
+          find_library(tmp_lib_${tmp}
+              NAMES ${tmp}
+              HINTS ${GLIB2_LIBRARY_DIRS}
+          )
+          set(tl ${tl} ${tmp_lib_${tmp}})
+      endforeach(tmp)
+      set(GLIB2_LIBRARIES ${tl})
     ELSE ( GLIB2_FOUND )
       SET ( GLIB2_CORE_FOUND FALSE )
     ENDIF ( GLIB2_FOUND )
@@ -134,6 +143,7 @@ ELSE ()
         /usr/local/lib
         /usr/lib
       )
+      message(STATUS INTL ${LIBINTL_LIBRARY})
 
       IF (LIBINTL_LIBRARY AND LIBINTL_INCLUDE_DIR)
         SET (LIBINTL_FOUND TRUE)
