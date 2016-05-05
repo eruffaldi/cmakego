@@ -97,6 +97,9 @@ else ()
             #message(STATUS "Outcome ${tl}")
             set(${_component_prefix}_INCLUDE_DIRS ${PC_${_component_prefix}_INCLUDE_DIRS})
             set(${_component_prefix}_LIBRARIES ${tl})
+            #UNKNOWN LINUX HACK
+            set(GSTREAMER_${_component_prefix}_INCLUDE_DIRS ${PC_${_component_prefix}_INCLUDE_DIRS})
+            set(GSTREAMER_${_component_prefix}_LIBRARIES ${tl})
         endif()
         #original
         #find_path(${_component_prefix}_INCLUDE_DIRS

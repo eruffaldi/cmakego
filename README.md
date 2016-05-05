@@ -3,7 +3,9 @@ Simpler way of declaring libraries used in CMake using the virtual libraries not
 
 ## usage ##
 
-Make the cmakego.cmake accessible to the cmake using CMAKE_MODULE_PATH and then first include it, then use the command usepackage.
+Make the cmakego.cmake accessible to the cmake using CMAKE_MODULE_PATH and then first include it, then use the command usepackage:
+
+cmake -DCMAKE_MODULE_PATH=~/Dropbox/repos/cmakego .
 
 The usepackage syntax is:
 
