@@ -86,12 +86,16 @@ function(usepackage)
 						find_library(XRANDR_LIBRARY Xrandr)
 						find_library(XI_LIBRARY Xi)
 						find_library(XEXT_LIBRARY Xext)
+						find_library(XINEARAMA_LIBRARY Xinerama)
+						find_library(XCURSOR_LIBRARY Xcursor)
 						set(DISPLAY_LIBRARIES 
 									${X11_LIBRARY}
 									${XX_LIBRARY}
 									${XRANDR_LIBRARY}
 									${XI_LIBRARY}
 									${XEXT_LIBRARY}
+									${XINEARAMA_LIBRARY}
+									${XCURSOR_LIBRARY}
 									-lrt -lm -lusb-1.0 
 									)						
 					elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
