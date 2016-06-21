@@ -7,7 +7,7 @@ Make the cmakego.cmake accessible to the cmake using CMAKE_MODULE_PATH and then 
 
 cmake -DCMAKE_MODULE_PATH=~/Dropbox/repos/cmakego .
 
-The usepackage syntax is:
+There are two usages: first as include providing the usepackage function as follows:
 
 ``` cpp
 usepackage(packagename1 ... [GLOBAL] [REQUIRED])
@@ -25,6 +25,8 @@ Then the p::packagename can be used in the target_link_libraries of a target to 
 When REQUIRED is present then the package is enforced otherwise the cmake will terminate.
 
 When GLOBAL is used then the virtual target is added to the global list via link_libraries and include_directories. In this way it is available to all the other targets. 
+
+The second usage is with more similar to catking with find_package(cmagego ...)
 
 ## example ##
 The following example uses OpeNGL, GLEW, GLFW, GLM and AssImp. Note that dependences have been created between glew/glfw and opengl so the latter is automatically pulled and added.
