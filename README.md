@@ -71,6 +71,7 @@ The supported libraries come from the domain of 3D OpenGL/AR/vision being relate
 * libusb (1.0)
 * lz4
 * nlopt
+* ogre
 * opencv
 * opengl
 * opengles2
