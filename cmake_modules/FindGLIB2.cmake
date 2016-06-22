@@ -24,7 +24,7 @@
 IF (GLIB2_LIBRARIES AND GLIB2_INCLUDE_DIRS )
   # in cache already
   SET(GLIB2_FOUND TRUE)
-ELSE ()
+ELSE (GLIB2_LIBRARIES AND GLIB2_INCLUDE_DIRS )
 
   INCLUDE(FindPkgConfig)
 
@@ -43,23 +43,13 @@ ELSE ()
   IF ( PKG_CONFIG_FOUND )
     IF ( GLIB2_FOUND )
       SET ( GLIB2_CORE_FOUND TRUE )
-      set(tl "")
-      foreach (tmp ${GLIB2_LIBRARIES})
-          find_library(tmp_lib_${tmp}
-              NAMES ${tmp}
-              HINTS ${GLIB2_LIBRARY_DIRS}
-          )
-          set(tl ${tl} ${tmp_lib_${tmp}})
-      endforeach(tmp)
-      set(GLIB2_LIBRARIES ${tl})
     ELSE ( GLIB2_FOUND )
       SET ( GLIB2_CORE_FOUND FALSE )
     ENDIF ( GLIB2_FOUND )
   ENDIF ( PKG_CONFIG_FOUND )
-  message(STATUS glibfound ${GLIB2_FOUND} then ${PKG_CONFIG_FOUND})
 
   # Look for glib2 include dir and libraries w/o pkgconfig
-  IF ( NOT GLIB2_FOUND OR NOT PKG_CONFIG_FOUND )
+  IF ( NOT GLIB2_FOUND AND NOT PKG_CONFIG_FOUND )
     FIND_PATH(
       _glibconfig_include_DIR
     NAMES
@@ -85,14 +75,14 @@ ELSE ()
     PATHS
       /opt/gnome/include
       /opt/local/include
-      /sw/include      
+      /sw/include
       /usr/include
       /usr/local/include
     PATH_SUFFIXES
       glib-2.0
     )
 
-    MESSAGE(STATUS "Glib headers: ${_glib2_include_DIR} ${_glibconfig_include_DIR}")
+    #MESSAGE(STATUS "Glib headers: ${_glib2_include_DIR}")
 
     FIND_LIBRARY(
       _glib2_link_DIR
@@ -143,7 +133,6 @@ ELSE ()
         /usr/local/lib
         /usr/lib
       )
-      message(STATUS INTL ${LIBINTL_LIBRARY})
 
       IF (LIBINTL_LIBRARY AND LIBINTL_INCLUDE_DIR)
         SET (LIBINTL_FOUND TRUE)
@@ -157,6 +146,7 @@ ELSE ()
         iconv.h
       PATHS
         /opt/gnome/include
+        /opt/local/include
         /opt/local/include
         /sw/include
         /sw/include
@@ -217,12 +207,11 @@ ELSE ()
 ENDIF (GLIB2_LIBRARIES AND GLIB2_INCLUDE_DIRS)
 
 IF ( GLIB2_FOUND )
-	# Check if system has a newer version of glib
-	# which supports g_regex_match_simple
-	INCLUDE( CheckIncludeFiles )
-	#SET( CMAKE_REQUIRED_INCLUDES ${GLIB2_INCLUDE_DIRS} )
-	CHECK_INCLUDE_FILES ( glib/gregex.h HAVE_GLIB_GREGEX_H )
-	# Reset CMAKE_REQUIRED_INCLUDES
-	SET( CMAKE_REQUIRED_INCLUDES "" )
-  message(STATUS includes ${GLIB2_INCLUDE_DIRS})
+  # Check if system has a newer version of glib
+  # which supports g_regex_match_simple
+  INCLUDE( CheckIncludeFiles )
+  SET( CMAKE_REQUIRED_INCLUDES ${GLIB2_INCLUDE_DIRS} )
+  CHECK_INCLUDE_FILES ( glib/gregex.h HAVE_GLIB_GREGEX_H )
+  # Reset CMAKE_REQUIRED_INCLUDES
+  SET( CMAKE_REQUIRED_INCLUDES "" )
 ENDIF( GLIB2_FOUND )
