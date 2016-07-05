@@ -72,12 +72,17 @@ The supported libraries come from the domain of 3D OpenGL/AR/vision being relate
 * lz4
 * nlopt
 * ogre
+* ois (for ogre)
 * opencv
 * opengl
 * opengles2
 * openni2
 * ovr (Oculus)
 * portaudio
+* qt4
+* qt5
+* rbdl
+* tinyxml
 * tinyxml2
 * x264
 * zeromq
