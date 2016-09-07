@@ -71,7 +71,7 @@ else ()
 endif ()
 
 if(APPLE AND NOT OGRE_STATIC)
-	set(OGRE_LIBRARY_NAMES "Ogre${OGRE_LIB_SUFFIX}")
+	set(OGRE_LIBRARY_NAMES "OgreMain${OGRE_LIB_SUFFIX}")
 else()
     set(OGRE_LIBRARY_NAMES "OgreMain${OGRE_LIB_SUFFIX}")
 endif()
