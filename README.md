@@ -7,7 +7,13 @@ Make the cmakego.cmake accessible to the cmake using CMAKE_MODULE_PATH and then 
 
 cmake -DCMAKE_MODULE_PATH=~/Dropbox/repos/cmakego .
 
-There are two usages: first as include providing the usepackage function as follows:
+First method is based on find_package much like catkin
+
+``` cpp
+find_package(cmagego COMPONENTS ...)
+```
+
+The second requires inclusion of the script and then the usepackage macro:
 
 ``` cpp
 usepackage(packagename1 ... [GLOBAL] [REQUIRED])
@@ -26,16 +32,14 @@ When REQUIRED is present then the package is enforced otherwise the cmake will t
 
 When GLOBAL is used then the virtual target is added to the global list via link_libraries and include_directories. In this way it is available to all the other targets. 
 
-The second usage is with more similar to catking with find_package(cmagego ...)
 
 ## example ##
 The following example uses OpeNGL, GLEW, GLFW, GLM and AssImp. Note that dependences have been created between glew/glfw and opengl so the latter is automatically pulled and added.
 ``` cpp
 	cmake_minimum_required(VERSION 3.0)
-	include(cmakego.cmake)
 
 	add_definitions(--std=c++11 -DGLM_FORCE_RADIANS)
-	usepackage(glfw glew glm boost assimp)
+	find_package(cmakego COMPONENTS glfw glew glm boost assimp)
 
 	add_executable(go1 go1.cpp)
 	target_link_libraries(go1 p::glew p::glfw p::glm p::boost p::assimp)
@@ -67,6 +71,7 @@ The supported libraries come from the domain of 3D OpenGL/AR/vision being relate
 * gstreamer: glib2
 * json
 * kdl
+* lame
 * leap
 * libusb (1.0)
 * lz4
@@ -84,6 +89,7 @@ The supported libraries come from the domain of 3D OpenGL/AR/vision being relate
 * rbdl
 * tinyxml
 * tinyxml2
+* visp
 * x264
 * zeromq
 
