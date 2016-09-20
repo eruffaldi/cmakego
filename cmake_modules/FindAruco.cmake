@@ -44,6 +44,8 @@ IF(Aruco_ROOT)
           ${Aruco_INCLUDE_SEARCH_DIRS}
           ${Aruco_ROOT}/include
           ${Aruco_ROOT}/include/aruco
+          /usr/include/aruco
+          /usr/local/include/aruco
     )
     SET(Aruco_LIBRARY_SEARCH_DEBUG_DIRS
         ${Aruco_LIBRARY_SEARCH_DIRS}
