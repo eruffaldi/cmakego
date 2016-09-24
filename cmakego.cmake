@@ -88,6 +88,28 @@ function(usepackage)
 						set_property(TARGET p::lame PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${LAME_INCLUDE_DIRS}")
 						set_property(TARGET p::lame PROPERTY INTERFACE_LINK_LIBRARIES ${LAME_LIBRARIES})
 					endif()		
+				elseif(${name} STREQUAL x11)
+						find_library(X11_LIBRARY X11)
+						find_library(XX_LIBRARY Xxf86vm)
+						find_library(XRANDR_LIBRARY Xrandr)
+						find_library(XI_LIBRARY Xi)
+						find_library(XEXT_LIBRARY Xext)
+						find_library(XINEARAMA_LIBRARY Xinerama)
+						find_library(XCURSOR_LIBRARY Xcursor)
+						set(XX11_LIBRARIES 
+									${X11_LIBRARY}
+									${XX_LIBRARY}
+									${XRANDR_LIBRARY}
+									${XI_LIBRARY}
+									${XEXT_LIBRARY}
+									${XINEARAMA_LIBRARY}
+									${XCURSOR_LIBRARY}
+									-lm 
+									)						
+					add_library(p::x11 INTERFACE IMPORTED)
+					set_property(TARGET p::x11 PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${XX11_INCLUDE_DIR}")
+					set_property(TARGET p::x11 PROPERTY INTERFACE_LINK_LIBRARIES ${XX11_LIBRARIES})					
+				
 				elseif(${name} STREQUAL display)
 					if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 						set(DISPLAY_INCLUDE_DIR)
@@ -155,6 +177,13 @@ function(usepackage)
 						list(GET OIS_LIBRARIES 1 XG)
 						set_property(TARGET p::ois PROPERTY INTERFACE_LINK_LIBRARIES ${XG}  p::opengl p::display)
 					endif()					
+				elseif(${name} STREQUAL curl)
+					find_package(CURL ${isrequired})
+					if(CURL_FOUND)
+						add_library(p::curl INTERFACE IMPORTED)
+						set_property(TARGET p::curl PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CURL_INCLUDE_DIRS}")
+						set_property(TARGET p::curl PROPERTY INTERFACE_LINK_LIBRARIES ${CURL_LIBRARIES})
+					endif()					
 				elseif(${name} STREQUAL qt5)
 					find_package(Qt5Widgets ${isrequired})
 					if(QT5_FOUND)
@@ -211,6 +240,19 @@ function(usepackage)
 						#set_property(TARGET p::boost::program_options PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIRS})
 						#set_property(TARGET p::boost::program_options PROPERTY INTERFACE_LINK_LIBRARIES ${Boost_PROGRAM_OPTIONS_LIBRARY})
 					endif()		
+				elseif(${name} STREQUAL asio)
+					find_path(ASIO_INCLUDE_DIR
+					  NAMES
+					    asio.hpp
+					  PATHS
+					    /usr/include
+					    /usr/local/include
+					)
+					if(ASIO_INCLUDE_DIR)
+						add_library(p::asio INTERFACE IMPORTED)
+						set_property(TARGET p::asio PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${asio_INCLUDE_DIRS})
+					endif()
+
 				elseif(${name} STREQUAL assimp)
 					find_package(AssImp ${isrequired})
 					if(ASSIMP_FOUND)
@@ -401,10 +443,10 @@ function(usepackage)
 				else()
 					include(cmakego_{$name} OPTIONAL RESULT_VARIABLE missing)
 					if(NOT ${missing})
-						message(FATAL_ERROR Unknown Target ${xname} prvide cmake_{$name})
+						message(FATAL_ERROR "Unknown Target ${xname} provide cmake_${name}")
 					endif()
 					if(NOT TARGET ${xname} AND isrequired)
-						message(FATAL_ERROR Included file cmake_{$name} has not provided {$xname})
+						message(FATAL_ERROR "Included file cmake_${name} has not provided ${xname}")
 					endif()
 				endif()
 				if(NOT TARGET ${xname} AND isrequired)
