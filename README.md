@@ -10,7 +10,7 @@ cmake -DCMAKE_MODULE_PATH=~/Dropbox/repos/cmakego .
 First method is based on find_package much like catkin
 
 ``` cpp
-find_package(cmagego COMPONENTS ...)
+find_package(cmagego REQUIRED COMPONENTS ... [REQUIRED])
 ```
 
 The second requires inclusion of the script and then the usepackage macro:
@@ -32,6 +32,7 @@ When REQUIRED is present then the package is enforced otherwise the cmake will t
 
 When GLOBAL is used then the virtual target is added to the global list via link_libraries and include_directories. In this way it is available to all the other targets. 
 
+In addition ALL the dependencies included by cmakego are included in the variable CMAKEGO_PACKAGES
 
 ## example ##
 The following example uses OpeNGL, GLEW, GLFW, GLM and AssImp. Note that dependences have been created between glew/glfw and opengl so the latter is automatically pulled and added.
@@ -53,9 +54,11 @@ The following example uses OpeNGL, GLEW, GLFW, GLM and AssImp. Note that depende
 The supported libraries come from the domain of 3D OpenGL/AR/vision being related to the things we typically work with:
 
 * aruco: opencv
+* asio
 * assimp
 * boost
 * cairo
+* curl
 * display (virtual)
 * egl
 * eigen
@@ -78,7 +81,8 @@ The supported libraries come from the domain of 3D OpenGL/AR/vision being relate
 * nlopt
 * ogre
 * ois (for ogre)
-* opencv
+* opencv2
+* opencv3
 * opengl
 * opengles2
 * openni2
@@ -87,12 +91,13 @@ The supported libraries come from the domain of 3D OpenGL/AR/vision being relate
 * qt4
 * qt5
 * rbdl
+* sdl2
 * tinyxml
 * tinyxml2
-* visp
 * x264
++ yaml
 * zeromq
-
+* zlib
 ## virtual libraries ##
 
 * display: this is a library for accessing the native system (X11 under Linux, CoCoa under OSX)
